@@ -3,8 +3,6 @@ name: Deploy Static Site to AWS
 on:
   push:
     branches:
-      - dev
-      - staging
       - main
 
 jobs:
@@ -30,18 +28,8 @@ jobs:
       - name: Initialize Terraform
         run: terraform init
 
-      - name: Select Terraform Workspace
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            terraform workspace select dev || terraform workspace new dev
-          elif [[ "${{ github.ref }}" == "refs/heads/staging" ]]; then
-            terraform workspace select staging || terraform workspace new staging
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            terraform workspace select prod || terraform workspace new prod
-          fi
-
       - name: Plan Terraform Changes
-        run: terraform plan -var-file="environments/${{ github.ref_name }}.tfvars"
+        run: terraform plan 
 
       - name: Apply Terraform Changes
-        run: terraform apply -auto-approve -var-file="environments/${{ github.ref_name }}.tfvars"
+        run: terraform apply -auto-approve
